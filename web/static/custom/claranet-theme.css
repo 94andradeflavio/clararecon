@@ -1,0 +1,121 @@
+/*
+ * Tema Claranet - reNgine
+ * Centralized theme configuration
+ * 
+ * Para alterar cores, edite apenas este arquivo
+ */
+
+:root {
+  /* Cores Principais */
+  --claranet-primary: #DA0812;
+  --claranet-secondary: #C8D2D8;
+  --claranet-success: #6DB3A7;
+  --claranet-warning: #FAE022;
+  --claranet-danger: #DA0812;
+  --claranet-info: #5B6293;
+
+  /* Cores de Fundo */
+  --claranet-bg-light: #F7F8FC;
+  --claranet-bg-dark: #252733;
+  --claranet-card: #FFFFFF;
+
+  /* Cores de Texto */
+  --claranet-text-light: #464650;
+  --claranet-text-dark: #9FA2B4;
+  --claranet-text-white: #FFFFFF;
+
+  /* Cores de Borda */
+  --claranet-border: #d9d9d9;
+
+  /* Cores de Status */
+  --claranet-status-ativo: #83D5F6;
+  --claranet-status-cancelado: #DA0812;
+  --claranet-status-expirado: #6B719E;
+  --claranet-status-pendente: #FAE022;
+  --claranet-status-aprovado: #6DB3A7;
+
+  /* Cores para Gráficos */
+  --claranet-graph-red: #DA0812;
+  --claranet-graph-yellow: #FAE022;
+  --claranet-graph-lightblue: #76D1F5;
+  --claranet-graph-green: #6DB3A7;
+  --claranet-graph-mediumblue: #5B6293;
+  --claranet-graph-darkblue: #233741;
+  --claranet-graph-grey: #464650;
+}
+
+/* Aplicar tema Claranet ao Bootstrap */
+:root {
+  /* Sobrescrever variáveis do Bootstrap */
+  --bs-primary: var(--claranet-primary);
+  --bs-secondary: var(--claranet-secondary);
+  --bs-success: var(--claranet-success);
+  --bs-warning: var(--claranet-warning);
+  --bs-danger: var(--claranet-danger);
+  --bs-info: var(--claranet-info);
+  --bs-body-bg: var(--claranet-bg-light);
+  --bs-body-color: var(--claranet-text-light);
+  --bs-border-color: var(--claranet-border);
+}
+
+/* Tema Dark */
+[data-theme="dark"] {
+  --bs-primary: var(--claranet-primary);
+  --bs-secondary: var(--claranet-text-light);
+  --bs-success: var(--claranet-success);
+  --bs-warning: var(--claranet-warning);
+  --bs-danger: var(--claranet-danger);
+  --bs-info: var(--claranet-info);
+  --bs-body-bg: var(--claranet-bg-dark);
+  --bs-body-color: var(--claranet-text-dark);
+}
+
+/* Sobrescrever cores hardcoded nos elementos principais */
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .show > .nav-link,
+#sidebar-menu > ul > li > a:active,
+#sidebar-menu > ul > li > a:focus,
+#sidebar-menu > ul > li > a:hover,
+#sidebar-menu > ul > li > a.mm-active,
+#sidebar-menu .menuitem-active > a,
+#sidebar-menu .menuitem-active .active,
+.nav-second-level li a:focus,
+.nav-second-level li a:hover,
+.nav-second-level li.active > a,
+.menu-arrow,
+.text-primary {
+  color: var(--claranet-primary) !important;
+}
+
+.bg-primary,
+.btn-primary,
+.form-check-input:checked,
+.page-item.active .page-link,
+.badge-primary,
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--claranet-primary) !important;
+  border-color: var(--claranet-primary) !important;
+}
+
+.btn-primary {
+  background-color: var(--claranet-primary) !important;
+  border-color: var(--claranet-primary) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--claranet-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(218, 8, 18, 0.25) !important;
+}
+
+/* Cores de status */
+.text-success { color: var(--claranet-success) !important; }
+.text-warning { color: var(--claranet-warning) !important; }
+.text-danger { color: var(--claranet-danger) !important; }
+.text-info { color: var(--claranet-info) !important; }
+
+.bg-success { background-color: var(--claranet-success) !important; }
+.bg-warning { background-color: var(--claranet-warning) !important; }
+.bg-danger { background-color: var(--claranet-danger) !important; }
+.bg-info { background-color: var(--claranet-info) !important; }
