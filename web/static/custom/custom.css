@@ -9,7 +9,7 @@ body[data-layout-mode=horizontal] .container-fluid {
 }
 
 .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .show>.nav-link{
-  color: var(--claranet-primary);
+  color: var(--rng-primary);
 }
 
 .text-sm-logo{
