@@ -101,12 +101,28 @@
         tippy('.top-activity-counter', {
           content: 'Scan Activity',
         });
+        // Sync data-theme attribute for CSS variable overrides
+        function syncDataTheme(mode) {
+          if (mode === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        }
+
         if (localStorage.getItem('rengine-theme') == "dark") {
+          syncDataTheme('dark');
           $('#dark-mode-check').prop("checked", true).change();
         }
         else{
+          syncDataTheme('light');
           $('#dark-mode-check').prop("checked", false).change();
         }
+
+        // Keep data-theme in sync when toggle changes
+        $('#dark-mode-check').on('change', function() {
+          syncDataTheme(this.checked ? 'dark' : 'light');
+        });
         handleHashInUrl();
       });
 
