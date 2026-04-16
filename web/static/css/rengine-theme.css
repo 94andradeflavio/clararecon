@@ -1,0 +1,477 @@
+/*
+ * reNgine Theme
+ * Single source of truth for all design tokens.
+ * Colors are IMMUTABLE — do not change color values.
+ *
+ * Structure:
+ *   1. @font-face declarations
+ *   2. :root — all CSS custom properties (light mode)
+ *   3. [data-theme="dark"] — dark mode overrides
+ *   4. Bootstrap bridge — maps --rng-* to --bs-*
+ *   5. Typography application
+ *   6. Spacing, radius, shadows, modals
+ *   7. Hardcoded override selectors
+ */
+
+/* ==========================================================================
+   1. FONT DECLARATIONS
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/Roboto-Regular.woff2') format('woff2'),
+       url('../fonts/Roboto-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/Roboto-Medium.woff2') format('woff2'),
+       url('../fonts/Roboto-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/Roboto-Bold.woff2') format('woff2'),
+       url('../fonts/Roboto-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/Montserrat-Medium.woff2') format('woff2'),
+       url('../fonts/Montserrat-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/Montserrat-Bold.woff2') format('woff2'),
+       url('../fonts/Montserrat-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   2. CSS CUSTOM PROPERTIES — LIGHT MODE (default)
+   ========================================================================== */
+
+:root {
+  /* --- Colors (IMMUTABLE — do not change) --- */
+
+  /* Semantic */
+  --rng-primary: #DA0812;
+  --rng-secondary: #C8D2D8;
+  --rng-success: #6DB3A7;
+  --rng-warning: #FAE022;
+  --rng-danger: #DA0812;
+  --rng-info: #5B6293;
+
+  /* Surfaces */
+  --rng-bg: #F7F8FC;
+  --rng-card: #FFFFFF;
+  --rng-white: #FFFFFF;
+  --rng-black: #000000;
+
+  /* Text */
+  --rng-text: #464650;
+  --rng-text-light: #9FA2B4;
+  --rng-text-white: #FFFFFF;
+
+  /* Grays */
+  --rng-gray-dark: #252733;
+  --rng-gray: #464650;
+  --rng-gray-light: #9FA2B4;
+  --rng-gray-darker: #34454E;
+
+  /* Borders */
+  --rng-border: #d9d9d9;
+
+  /* Status */
+  --rng-status-ativo: #83D5F6;
+  --rng-status-cancelado: #DA0812;
+  --rng-status-expirado: #6B719E;
+  --rng-status-pendente: #FAE022;
+  --rng-status-reprovado: #464650;
+  --rng-status-utilizado: #6DB3A7;
+
+  /* Graphs */
+  --rng-graph-red: #DA0812;
+  --rng-graph-yellow: #FAE022;
+  --rng-graph-lightblue: #76D1F5;
+  --rng-graph-green: #6DB3A7;
+  --rng-graph-mediumblue: #5B6293;
+  --rng-graph-darkblue: #233741;
+  --rng-graph-grey: #464650;
+
+  /* Pagination */
+  --rng-pagination-active: #DA0812;
+  --rng-pagination-hover: #EEEEEE;
+  --rng-pagination-arrow: #9FA2B4;
+  --rng-pagination-arrow-disabled: #C8C8C8;
+
+  /* Shadows & Overlays */
+  --rng-shadow-modal: rgba(0, 0, 0, 0.25);
+  --rng-shadow-button: rgba(165, 163, 174, 0.3);
+  --rng-overlay: rgba(0, 0, 0, 0.25);
+  --rng-loading-overlay: #00000080;
+
+  /* --- Typography --- */
+  --rng-font-body: 'Roboto', sans-serif;
+  --rng-font-heading: 'Montserrat', sans-serif;
+  --rng-font-weight-regular: 400;
+  --rng-font-weight-medium: 500;
+  --rng-font-weight-bold: 700;
+  --rng-font-xs: 10px;
+  --rng-font-sm: 12px;
+  --rng-font-md: 14px;
+  --rng-font-lg: 16px;
+  --rng-font-xl: 18px;
+  --rng-font-xxl: 20px;
+
+  /* --- Spacing --- */
+  --rng-space-xs: 4px;
+  --rng-space-sm: 8px;
+  --rng-space-md: 16px;
+  --rng-space-lg: 32px;
+
+  /* --- Modal Widths --- */
+  --rng-modal-sm: 300px;
+  --rng-modal-md: 590px;
+  --rng-modal-lg: 980px;
+
+  /* --- Border Radius --- */
+  --rng-radius: 6px;
+}
+
+/* ==========================================================================
+   3. DARK MODE OVERRIDES
+   ========================================================================== */
+
+[data-theme="dark"] {
+  /* Surfaces */
+  --rng-bg: #252733;
+  --rng-card: #2D2F3A;
+
+  /* Text */
+  --rng-text: #E0E0E0;
+  --rng-text-light: #9FA2B4;
+
+  /* Borders */
+  --rng-border: #3A3C4A;
+
+  /* Shadows (deeper in dark mode) */
+  --rng-shadow-button: rgba(0, 0, 0, 0.4);
+  --rng-shadow-modal: rgba(0, 0, 0, 0.5);
+  --rng-overlay: rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   4. BOOTSTRAP BRIDGE — maps --rng-* to --bs-*
+   ========================================================================== */
+
+:root {
+  --bs-primary: var(--rng-primary);
+  --bs-secondary: var(--rng-secondary);
+  --bs-success: var(--rng-success);
+  --bs-warning: var(--rng-warning);
+  --bs-danger: var(--rng-danger);
+  --bs-info: var(--rng-info);
+  --bs-body-bg: var(--rng-bg);
+  --bs-body-color: var(--rng-text);
+  --bs-body-font-family: var(--rng-font-body);
+  --bs-body-font-size: var(--rng-font-md);
+  --bs-body-line-height: 1.5;
+  --bs-border-color: var(--rng-border);
+  --bs-border-radius: var(--rng-radius);
+  --bs-border-radius-sm: var(--rng-radius);
+  --bs-border-radius-lg: var(--rng-radius);
+  --bs-card-bg: var(--rng-card);
+  --bs-card-border-radius: var(--rng-radius);
+}
+
+/* Dark mode bridge — re-map surface/text variables */
+[data-theme="dark"] {
+  --bs-body-bg: var(--rng-bg);
+  --bs-body-color: var(--rng-text);
+  --bs-border-color: var(--rng-border);
+  --bs-card-bg: var(--rng-card);
+}
+
+/* ==========================================================================
+   5. TYPOGRAPHY APPLICATION
+   ========================================================================== */
+
+body {
+  font-family: var(--rng-font-body) !important;
+  font-size: var(--rng-font-md) !important;
+  font-weight: var(--rng-font-weight-regular);
+  line-height: 1.5;
+  color: var(--rng-text);
+  background-color: var(--rng-bg);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--rng-font-heading) !important;
+  font-weight: var(--rng-font-weight-bold);
+  color: var(--rng-gray-dark);
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] .h1,
+[data-theme="dark"] .h2,
+[data-theme="dark"] .h3,
+[data-theme="dark"] .h4,
+[data-theme="dark"] .h5,
+[data-theme="dark"] .h6 {
+  color: var(--rng-text);
+}
+
+.page-title {
+  font-size: var(--rng-font-xxl) !important;
+  font-family: var(--rng-font-heading) !important;
+  font-weight: var(--rng-font-weight-bold);
+}
+
+.navbar-custom,
+.breadcrumb,
+.breadcrumb-item,
+label,
+.form-label,
+.nav-link {
+  font-family: var(--rng-font-body) !important;
+  font-weight: var(--rng-font-weight-medium);
+}
+
+table,
+.table,
+.form-control,
+.form-select,
+input,
+textarea,
+select {
+  font-family: var(--rng-font-body) !important;
+  font-weight: var(--rng-font-weight-regular);
+}
+
+.badge {
+  font-size: var(--rng-font-sm) !important;
+}
+
+/* ==========================================================================
+   6. SPACING, RADIUS, SHADOWS, MODALS
+   ========================================================================== */
+
+/* Border radius */
+.card,
+.dropdown-menu,
+.modal-content,
+.tooltip-inner,
+.popover,
+.btn,
+.form-control,
+.form-select,
+.input-group-text,
+.alert,
+.toast,
+.progress,
+.badge {
+  border-radius: var(--rng-radius) !important;
+}
+
+.btn-sm {
+  border-radius: calc(var(--rng-radius) - 2px) !important;
+}
+
+.btn-lg {
+  border-radius: calc(var(--rng-radius) + 2px) !important;
+}
+
+/* Card spacing */
+.card {
+  background-color: var(--rng-card);
+  border-color: var(--rng-border);
+}
+
+/* Modal widths */
+.modal-sm {
+  max-width: var(--rng-modal-sm) !important;
+}
+
+.modal-dialog {
+  max-width: var(--rng-modal-md);
+}
+
+.modal-lg,
+.modal-xl {
+  max-width: var(--rng-modal-lg) !important;
+}
+
+.modal-content {
+  box-shadow: 0 4px 24px var(--rng-shadow-modal);
+}
+
+.modal-backdrop {
+  background-color: var(--rng-overlay);
+}
+
+/* Dropdown shadows */
+.dropdown-menu {
+  box-shadow: 0 4px 24px var(--rng-shadow-modal);
+  border-color: var(--rng-border);
+}
+
+/* ==========================================================================
+   7. HARDCODED OVERRIDE SELECTORS
+   ========================================================================== */
+
+/* Primary color overrides */
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .show > .nav-link,
+#sidebar-menu > ul > li > a:active,
+#sidebar-menu > ul > li > a:focus,
+#sidebar-menu > ul > li > a:hover,
+#sidebar-menu > ul > li > a.mm-active,
+#sidebar-menu .menuitem-active > a,
+#sidebar-menu .menuitem-active .active,
+.nav-second-level li a:focus,
+.nav-second-level li a:hover,
+.nav-second-level li.active > a,
+.menu-arrow,
+.text-primary {
+  color: var(--rng-primary) !important;
+}
+
+.bg-primary,
+.btn-primary,
+.form-check-input:checked,
+.page-item.active .page-link,
+.badge-primary,
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--rng-primary) !important;
+  border-color: var(--rng-primary) !important;
+}
+
+.btn-primary {
+  background-color: var(--rng-primary) !important;
+  border-color: var(--rng-primary) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--rng-primary) !important;
+  border-color: var(--rng-primary) !important;
+  box-shadow: 0 2px 8px var(--rng-shadow-button) !important;
+  filter: brightness(0.9);
+}
+
+.btn-outline-primary {
+  color: var(--rng-primary) !important;
+  border-color: var(--rng-primary) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active {
+  background-color: var(--rng-primary) !important;
+  border-color: var(--rng-primary) !important;
+  color: var(--rng-white) !important;
+}
+
+/* Form focus states */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--rng-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(218, 8, 18, 0.25) !important;
+}
+
+/* Semantic color overrides */
+.text-success { color: var(--rng-success) !important; }
+.text-warning { color: var(--rng-warning) !important; }
+.text-danger { color: var(--rng-danger) !important; }
+.text-info { color: var(--rng-info) !important; }
+
+.bg-success { background-color: var(--rng-success) !important; }
+.bg-warning { background-color: var(--rng-warning) !important; }
+.bg-danger { background-color: var(--rng-danger) !important; }
+.bg-info { background-color: var(--rng-info) !important; }
+
+/* Pagination */
+.page-item.active .page-link {
+  background-color: var(--rng-pagination-active) !important;
+  border-color: var(--rng-pagination-active) !important;
+}
+
+.page-link:hover {
+  background-color: var(--rng-pagination-hover);
+}
+
+.page-link {
+  color: var(--rng-text);
+  border-radius: var(--rng-radius) !important;
+}
+
+/* Select2 integration */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: var(--rng-primary) !important;
+  border-radius: var(--rng-radius) !important;
+}
+
+/* Accordion primary color override */
+.accordion-button:not(.collapsed) {
+  color: var(--rng-primary);
+  background-color: rgba(218, 8, 18, 0.05);
+}
+
+/* Nav tabs active */
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  border-bottom-color: var(--rng-primary);
+}
+
+/* Links */
+a {
+  color: var(--rng-primary);
+}
+
+a:hover {
+  color: var(--rng-primary);
+  filter: brightness(0.8);
+}
+
+/* DataTables integration */
+table.dataTable thead th,
+table.dataTable thead td {
+  border-bottom-color: var(--rng-border) !important;
+}
+
+table.dataTable tbody tr {
+  background-color: var(--rng-card);
+}
+
+[data-theme="dark"] table.dataTable tbody tr {
+  background-color: var(--rng-card);
+  color: var(--rng-text);
+}
+
+/* SweetAlert2 confirm button */
+.swal2-confirm.swal2-styled {
+  background-color: var(--rng-primary) !important;
+  border-radius: var(--rng-radius) !important;
+}
