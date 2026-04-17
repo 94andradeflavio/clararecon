@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.auth.signals import user_logged_in
 from django.contrib import messages
 from django.db.models import Count
 from django.db.models.functions import TruncDay
@@ -260,15 +260,6 @@ def admin_interface_update(request, slug):
                 messageData = {'status': False, 'error': str(e)}
         return JsonResponse(messageData)
     return HttpResponseRedirect(reverse('admin_interface', kwargs={'slug': slug}))
-
-
-@receiver(user_logged_out)
-def on_user_logged_out(sender, request, **kwargs):
-    messages.add_message(
-        request,
-        messages.INFO,
-        'You have been successfully logged out. Thank you ' +
-        'for using reNgine.')
 
 
 @receiver(user_logged_in)

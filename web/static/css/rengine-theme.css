@@ -470,7 +470,7 @@ a {
 
 a:hover {
   color: var(--rng-primary);
-  filter: brightness(0.8);
+  opacity: 0.8;
 }
 
 /* DataTables integration */
@@ -1150,7 +1150,7 @@ table.dataTable tbody tr {
 
 [data-theme="dark"] a:not(.btn):not(.nav-link):not(.dropdown-item):not(.page-link):hover {
   color: #FF7878;
-  filter: none;
+  opacity: 1;
 }
 
 /* --- Scrollbar dark mode --- */
