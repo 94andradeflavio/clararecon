@@ -92,7 +92,7 @@
         $(window).on('hashchange', handleHashInUrl);
         render_search_history('{{current_project.slug}}');
 
-        // Daily update check disabled to avoid external reNgine branding in UI.
+        // Daily update check disabled to avoid external ClaraRecon branding in UI.
         // checkDailyUpdate();
 
         getScanStatusSidebar(project='{{current_project.slug}}', reload=false);

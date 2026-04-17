@@ -60,7 +60,7 @@ def bulk_import_targets(
 		elif is_ip:
 			target_obj = store_ip(name, project, description, h1_team_handle)
 		else:
-			logger.warning(f'{name} is not supported by reNgine')
+			logger.warning(f'{name} is not supported by ClaraRecon')
 			continue
 
 		if target_obj:
