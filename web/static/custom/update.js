@@ -147,48 +147,7 @@ function hasOneDayPassed() {
   return true;
 }
 
-function showAfterUpdatePopup() {
-  // this function will show a popup after the update is done to tell user about the new features
-  const currentVersion = document.body.getAttribute("data-rengine-version");
-  const lastShownVersion = localStorage.getItem("lastShownUpdateVersion");
-
-  if (lastShownVersion !== currentVersion) {
-    // const isFirstRun = lastShownVersion === null;
-    // we will use this once videos are made for features
-    // Swal.fire({
-    //   title: isFirstRun ? "Welcome to reNgine!" : "Thanks for updating!",
-    //   text: `Would you like to see ${
-    //     isFirstRun ? "the features" : "what's changed"
-    //   } in this version?`,
-    //   icon: "info",
-    //   showCancelButton: true,
-    //   confirmButtonText: "Yes, show me",
-    //   cancelButtonText: "No, thanks",
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     window.open("https://rengine.wiki/changelog/latest", "_blank");
-    //   }
-    //   localStorage.setItem("lastShownUpdateVersion", currentVersion);
-    // });
-    Swal.fire({
-      title: "Thanks for using reNgine!",
-      text: `Would you like to see what's new in this version?`,
-      icon: "info",
-      showCancelButton: true,
-      confirmButtonText: "Yes, show me",
-      cancelButtonText: "No, thanks",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.open(`https://rengine.wiki/whats-new/${currentVersion.replace(/\./g, "_")}`, "_blank");
-      }
-      localStorage.setItem("lastShownUpdateVersion", currentVersion);
-    });
-  }
-}
-
 $(document).ready(function () {
-    // show popup after update
-    showAfterUpdatePopup();
   // hide badge if update does not exists
   if (
     window.localStorage.getItem("update_available") &&
