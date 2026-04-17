@@ -162,14 +162,11 @@ class ScanHistory(models.Model):
 		)
 
 	def get_progress(self):
-		"""Formulae to calculate count number of true things to do, for http
-		crawler, it is always +1 divided by total scan activity associated - 2
-		(start and stop).
-		"""
 		number_of_steps = len(self.tasks) if self.tasks else 0
-		steps_done = len(self.scanactivity_set.all())
-		if steps_done and number_of_steps:
-			return round((number_of_steps / (steps_done)) * 100, 2)
+		if not number_of_steps:
+			return 0
+		steps_done = self.scanactivity_set.count()
+		return round((steps_done / number_of_steps) * 100, 2)
 
 	def get_completed_ago(self):
 		if self.stop_scan_date:

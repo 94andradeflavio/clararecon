@@ -2,7 +2,9 @@ import csv
 import json
 import os
 import pprint
+import signal
 import subprocess
+import threading
 import time
 import validators
 import xmltodict
@@ -4050,14 +4052,39 @@ def remove_duplicate_endpoints(
 				logger.warning(msg)
 
 @app.task(name='run_command', bind=False, queue='run_command_queue')
+def _kill_process_group(popen):
+	try:
+		os.killpg(os.getpgid(popen.pid), signal.SIGKILL)
+	except Exception:
+		try:
+			popen.kill()
+		except Exception:
+			pass
+
+
+def _start_timeout_watchdog(popen, timeout):
+	"""Return a flag dict and the Timer. Caller must cancel() in a finally."""
+	timed_out = {'flag': False}
+	timer = None
+	if timeout and timeout > 0:
+		def _fire():
+			timed_out['flag'] = True
+			_kill_process_group(popen)
+		timer = threading.Timer(timeout, _fire)
+		timer.daemon = True
+		timer.start()
+	return timed_out, timer
+
+
 def run_command(
-		cmd, 
-		cwd=None, 
-		shell=False, 
-		history_file=None, 
-		scan_id=None, 
+		cmd,
+		cwd=None,
+		shell=False,
+		history_file=None,
+		scan_id=None,
 		activity_id=None,
-		remove_ansi_sequence=False
+		remove_ansi_sequence=False,
+		timeout=None
 	):
 	"""Run a given command using subprocess module.
 
@@ -4068,11 +4095,14 @@ def run_command(
 		shell (bool): Run within separate shell if True.
 		history_file (str): Write command + output to history file.
 		remove_ansi_sequence (bool): Used to remove ANSI escape sequences from output such as color coding
+		timeout (int|None): Max seconds before the command is killed. Defaults to DEFAULT_COMMAND_TIMEOUT. 0 disables.
 	Returns:
 		tuple: Tuple with return_code, output.
 	"""
 	logger.info(cmd)
 	logger.warning(activity_id)
+
+	effective_timeout = DEFAULT_COMMAND_TIMEOUT if timeout is None else timeout
 
 	# Create a command record in the database
 	command_obj = Command.objects.create(
@@ -4081,22 +4111,36 @@ def run_command(
 		scan_history_id=scan_id,
 		activity_id=activity_id)
 
-	# Run the command using subprocess
+	# Run the command using subprocess. A new process group lets us kill the
+	# whole pipeline (including shell children like massdns) if the watchdog fires.
 	popen = subprocess.Popen(
 		cmd if shell else cmd.split(),
 		shell=shell,
 		stdout=subprocess.PIPE,
 		stderr=subprocess.STDOUT,
 		cwd=cwd,
-		universal_newlines=True)
+		universal_newlines=True,
+		preexec_fn=os.setsid)
+
+	timed_out, watchdog = _start_timeout_watchdog(popen, effective_timeout)
+
 	output = ''
-	for stdout_line in iter(popen.stdout.readline, ""):
-		item = stdout_line.strip()
-		output += '\n' + item
-		logger.debug(item)
-	popen.stdout.close()
-	popen.wait()
+	try:
+		for stdout_line in iter(popen.stdout.readline, ""):
+			item = stdout_line.strip()
+			output += '\n' + item
+			logger.debug(item)
+		popen.stdout.close()
+		popen.wait()
+	finally:
+		if watchdog:
+			watchdog.cancel()
+
 	return_code = popen.returncode
+	if timed_out['flag']:
+		timeout_msg = f'[Command killed after {effective_timeout}s timeout]'
+		output += f'\n{timeout_msg}'
+		logger.warning(f'{timeout_msg} cmd={cmd!r}')
 	command_obj.output = output
 	command_obj.return_code = return_code
 	command_obj.save()
@@ -4115,10 +4159,12 @@ def run_command(
 # Other utils #
 #-------------#
 
-def stream_command(cmd, cwd=None, shell=False, history_file=None, encoding='utf-8', scan_id=None, activity_id=None, trunc_char=None):
+def stream_command(cmd, cwd=None, shell=False, history_file=None, encoding='utf-8', scan_id=None, activity_id=None, trunc_char=None, timeout=None):
 	# Log cmd
 	logger.info(cmd)
 	# logger.warning(activity_id)
+
+	effective_timeout = DEFAULT_COMMAND_TIMEOUT if timeout is None else timeout
 
 	# Create a command record in the database
 	command_obj = Command.objects.create(
@@ -4130,51 +4176,65 @@ def stream_command(cmd, cwd=None, shell=False, history_file=None, encoding='utf-
 	# Sanitize the cmd
 	command = cmd if shell else cmd.split()
 
-	# Run the command using subprocess
+	# Run the command using subprocess. New process group so the watchdog can
+	# kill shell-spawned children when the timeout fires.
 	process = subprocess.Popen(
 		command,
 		stdout=subprocess.PIPE,
 		stderr=subprocess.STDOUT,
 		universal_newlines=True,
-		shell=shell)
+		shell=shell,
+		preexec_fn=os.setsid)
+
+	timed_out, watchdog = _start_timeout_watchdog(process, effective_timeout)
 
 	# Log the output in real-time to the database
 	output = ""
 
-	# Process the output
-	for line in iter(lambda: process.stdout.readline(), b''):
-		if not line:
-			break
-		line = line.strip()
-		ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-		line = ansi_escape.sub('', line)
-		line = line.replace('\\x0d\\x0a', '\n')
-		if trunc_char and line.endswith(trunc_char):
-			line = line[:-1]
-		item = line
+	try:
+		# Process the output
+		for line in iter(lambda: process.stdout.readline(), b''):
+			if not line:
+				break
+			line = line.strip()
+			ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+			line = ansi_escape.sub('', line)
+			line = line.replace('\\x0d\\x0a', '\n')
+			if trunc_char and line.endswith(trunc_char):
+				line = line[:-1]
+			item = line
 
-		# Try to parse the line as JSON
-		try:
-			item = json.loads(line)
-		except json.JSONDecodeError:
-			pass
+			# Try to parse the line as JSON
+			try:
+				item = json.loads(line)
+			except json.JSONDecodeError:
+				pass
 
-		# Yield the line
-		#logger.debug(item)
-		yield item
+			# Yield the line
+			#logger.debug(item)
+			yield item
 
-		# Add the log line to the output
-		output += line + "\n"
+			# Add the log line to the output
+			output += line + "\n"
 
-		# Update the command record in the database
-		command_obj.output = output
-		command_obj.save()
+			# Update the command record in the database
+			command_obj.output = output
+			command_obj.save()
 
-	# Retrieve the return code and output
-	process.wait()
+		# Retrieve the return code and output
+		process.wait()
+	finally:
+		if watchdog:
+			watchdog.cancel()
+
 	return_code = process.returncode
+	if timed_out['flag']:
+		timeout_msg = f'[Command killed after {effective_timeout}s timeout]'
+		output += timeout_msg + "\n"
+		logger.warning(f'{timeout_msg} cmd={cmd!r}')
 
 	# Update the return code and final output in the database
+	command_obj.output = output
 	command_obj.return_code = return_code
 	command_obj.save()
 

@@ -38,6 +38,9 @@ DEFAULT_HTTP_TIMEOUT = env.int('DEFAULT_HTTP_TIMEOUT', default=5) # seconds
 DEFAULT_RETRIES = env.int('DEFAULT_RETRIES', default=1)
 DEFAULT_THREADS = env.int('DEFAULT_THREADS', default=30)
 DEFAULT_GET_GPT_REPORT = env.bool('DEFAULT_GET_GPT_REPORT', default=True)
+# Max seconds any single external-tool subprocess is allowed to run before being killed.
+# 0 disables the timeout. See run_command / stream_command in reNgine.tasks.
+DEFAULT_COMMAND_TIMEOUT = env.int('DEFAULT_COMMAND_TIMEOUT', default=1800)
 
 # Globals
 ALLOWED_HOSTS = ['*']
