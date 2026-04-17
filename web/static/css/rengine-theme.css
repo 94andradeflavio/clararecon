@@ -559,10 +559,6 @@ table.dataTable tbody tr {
 }
 
 /* --- Top Navigation --- */
-[data-theme="dark"] #topnav-menu-content {
-  background-color: #1A1C2B;
-}
-
 [data-theme="dark"] .topbar-menu {
   background-color: #1A1C2B !important;
 }
