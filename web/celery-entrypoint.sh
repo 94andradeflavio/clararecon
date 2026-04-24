@@ -198,6 +198,13 @@ if [ "$DEBUG" == "1" ]; then
     loglevel='debug'
 fi
 
+# Fall back to sane defaults if the .env doesn't define them. Empty values
+# expand --autoscale to "," and crash the main_scan_queue worker on startup
+# (ValueError: invalid literal for int() with base 10: ''), which silently
+# strands every scan task routed to that queue.
+MAX_CONCURRENCY="${MAX_CONCURRENCY:-80}"
+MIN_CONCURRENCY="${MIN_CONCURRENCY:-10}"
+
 generate_worker_command() {
     local queue=$1
     local concurrency=$2
