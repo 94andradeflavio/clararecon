@@ -3015,16 +3015,19 @@ def http_crawl(
 			fields={'IPs': ips_str},
 			add_meta_info=False)
 
-		# Add IP object for host in DB
+		# Add IP object for host in DB. httpx may report the resolved hostname
+		# (not an IP) as `host`, in which case save_ip_address rejects it and
+		# returns None — guard before dereferencing.
 		if host:
 			ip, created = save_ip_address(
 				host,
 				subdomain,
 				subscan=self.subscan,
 				cdn=cdn)
-			self.notify(
-				fields={'IPs': f'• `{ip.address}`'},
-				add_meta_info=False)
+			if ip:
+				self.notify(
+					fields={'IPs': f'• `{ip.address}`'},
+					add_meta_info=False)
 
 		# Save subdomain and endpoint
 		if is_ran_from_subdomain_scan:
@@ -4513,7 +4516,10 @@ def save_endpoint(
 			urls=[http_url],
 			method='HEAD',
 			ctx=ctx)
-		if results:
+		# http_crawl is a RengineTask — on internal failure its __call__ returns
+		# the traceback string instead of raising. Only treat results as the
+		# expected list-of-dicts payload.
+		if results and isinstance(results, list) and isinstance(results[0], dict):
 			endpoint_data = results[0]
 			endpoint_id = endpoint_data['endpoint_id']
 			created = endpoint_data['endpoint_created']
