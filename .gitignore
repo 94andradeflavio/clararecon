@@ -2,6 +2,7 @@ web/custom_engines*
 Pipfile*
 resume.cfg
 *.txt
+!web/fixtures/extensions.txt
 *.log
 *.pot
 *.pyc
