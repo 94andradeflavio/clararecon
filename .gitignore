@@ -3,6 +3,8 @@ Pipfile*
 resume.cfg
 *.txt
 !web/fixtures/extensions.txt
+!web/requirements.txt
+!web/art/reNgine.txt
 *.log
 *.pot
 *.pyc
